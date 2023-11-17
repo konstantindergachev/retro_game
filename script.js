@@ -12,8 +12,13 @@ class Player {
     context.fillRect(this.x, this.y, this.width, this.height);
   }
   update() {
+    //horizontal movement
     if (this.game.keys.includes('ArrowLeft')) this.x -= this.speed;
     if (this.game.keys.includes('ArrowRight')) this.x += this.speed;
+
+    //horizontal boundaries
+    if (this.x < 0) this.x = 0;
+    else if (this.x > this.game.width - this.width) this.x = this.game.width - this.width;
   }
 }
 class Projectile {}
