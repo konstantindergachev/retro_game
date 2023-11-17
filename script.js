@@ -5,10 +5,14 @@ class Player {
     this.height = 100;
     this.x = this.game.width * 0.5 - this.width * 0.5;
     this.y = this.game.height - this.height;
+    this.speed = 5;
   }
 
   draw(context) {
     context.fillRect(this.x, this.y, this.width, this.height);
+  }
+  update() {
+    this.x += this.speed;
   }
 }
 class Projectile {}
@@ -23,6 +27,7 @@ class Game {
 
   render(context) {
     this.player.draw(context);
+    this.player.update();
   }
 }
 
@@ -33,5 +38,10 @@ window.addEventListener('load', () => {
   canvas.height = 800;
 
   const game = new Game(canvas);
-  game.render(ctx);
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    game.render(ctx);
+    requestAnimationFrame(animate);
+  }
+  animate();
 });
