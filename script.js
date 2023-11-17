@@ -12,7 +12,8 @@ class Player {
     context.fillRect(this.x, this.y, this.width, this.height);
   }
   update() {
-    this.x += this.speed;
+    if (this.game.keys.includes('ArrowLeft')) this.x -= this.speed;
+    if (this.game.keys.includes('ArrowRight')) this.x += this.speed;
   }
 }
 class Projectile {}
@@ -22,7 +23,16 @@ class Game {
     this.canvas = canvas;
     this.width = this.canvas.width;
     this.height = this.canvas.height;
+    this.keys = [];
     this.player = new Player(this);
+
+    window.addEventListener('keydown', (ev) => {
+      if (!this.keys.includes(ev.key)) this.keys.push(ev.key);
+    });
+    window.addEventListener('keyup', (ev) => {
+      const index = this.keys.indexOf(ev.key);
+      if (index > -1) this.keys.splice(index, 1);
+    });
   }
 
   render(context) {
