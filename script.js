@@ -107,6 +107,7 @@ window.addEventListener('load', () => {
   const ctx = canvas.getContext('2d');
   canvas.width = 600;
   canvas.height = 800;
+  ctx.fillStyle = 'white';
 
   const game = new Game(canvas);
   function animate() {
