@@ -57,6 +57,32 @@ class Projectile {
   }
 }
 class Enemy {}
+
+class Wave {
+  constructor(game) {
+    this.game = game;
+    this.width = this.game.columns * this.game.enemySize;
+    this.height = this.game.rows * this.game.enemySize;
+    this.x = 0;
+    this.y = 0;
+    this.speedX = 3;
+    this.speedY = 0;
+  }
+
+  render(context) {
+    this.speedY = 0;
+    context.strokeRect(this.x, this.y, this.width, this.height);
+
+    if (this.x < 0 || this.x > this.game.width - this.width) {
+      this.speedX *= -1;
+      this.speedY = this.game.enemySize;
+    }
+
+    this.x += this.speedX;
+    this.y += this.speedY;
+  }
+}
+
 class Game {
   constructor(canvas) {
     this.canvas = canvas;
@@ -68,6 +94,13 @@ class Game {
     this.projectilesPool = [];
     this.numberOfProjectiles = 10;
     this.createProjectiles();
+
+    this.columns = 3;
+    this.rows = 3;
+    this.enemySize = 60;
+
+    this.waves = [];
+    this.waves.push(new Wave(this));
 
     window.addEventListener('keydown', (ev) => {
       if (!this.keys.includes(ev.key)) this.keys.push(ev.key);
@@ -85,6 +118,9 @@ class Game {
     this.projectilesPool.forEach((projectile) => {
       projectile.update();
       projectile.draw(context);
+    });
+    this.waves.forEach((wave) => {
+      wave.render(context);
     });
   }
 
@@ -108,6 +144,8 @@ window.addEventListener('load', () => {
   canvas.width = 600;
   canvas.height = 800;
   ctx.fillStyle = 'white';
+  ctx.strokeStyle = 'white';
+  ctx.lineWidth = 2;
 
   const game = new Game(canvas);
   function animate() {
