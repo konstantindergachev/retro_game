@@ -79,6 +79,7 @@ class Enemy {
       if (!projectile.free && this.game.checkCollision(this, projectile)) {
         this.markedForDeletion = true;
         projectile.reset();
+        this.game.score += 1;
       }
     });
   }
@@ -143,6 +144,8 @@ class Game {
     this.waves = [];
     this.waves.push(new Wave(this));
 
+    this.score = 0;
+
     window.addEventListener('keydown', (ev) => {
       if (!this.keys.includes(ev.key)) this.keys.push(ev.key);
       if (ev.key === '1') this.player.shoot();
@@ -154,6 +157,7 @@ class Game {
   }
 
   render(context) {
+    this.drawStatusText(context);
     this.player.draw(context);
     this.player.update();
     this.projectilesPool.forEach((projectile) => {
@@ -183,6 +187,9 @@ class Game {
       a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y
     );
   }
+  drawStatusText(context) {
+    context.fillText(`Score: ${this.score}`, 20, 40);
+  }
 }
 
 window.addEventListener('load', () => {
@@ -193,6 +200,7 @@ window.addEventListener('load', () => {
   ctx.fillStyle = 'white';
   ctx.strokeStyle = 'white';
   ctx.lineWidth = 2;
+  ctx.font = '18px Monospace';
 
   const game = new Game(canvas);
   function animate() {
