@@ -100,6 +100,7 @@ class Wave {
     this.speedX = 3;
     this.speedY = 0;
     this.enemies = [];
+    this.nextWaveTrigger = false;
     this.create();
   }
 
@@ -142,12 +143,13 @@ class Game {
     this.numberOfProjectiles = 10;
     this.createProjectiles();
 
-    this.columns = 3;
-    this.rows = 3;
+    this.columns = 2;
+    this.rows = 2;
     this.enemySize = 60;
 
     this.waves = [];
     this.waves.push(new Wave(this));
+    this.waveCount = 1;
 
     this.score = 0;
     this.gameOver = false;
@@ -172,6 +174,11 @@ class Game {
     });
     this.waves.forEach((wave) => {
       wave.render(context);
+      if (wave.enemies.length < 1 && !wave.nextWaveTrigger && !this.gameOver) {
+        this.newWave();
+        this.waveCount += 1;
+        wave.nextWaveTrigger = true;
+      }
     });
   }
 
@@ -199,12 +206,18 @@ class Game {
     context.shadowOffsetY = 2;
     context.shadowColor = 'purple';
     context.fillText(`Score: ${this.score}`, 20, 40);
+    context.fillText(`Wave: ${this.waveCount}`, 20, 65);
     if (this.gameOver) {
       context.textAlign = 'center';
       context.font = '80px Monospace';
       context.fillText('GAME OVER!', this.width * 0.5, this.height * 0.5);
     }
     context.restore();
+  }
+  newWave() {
+    this.columns += 1;
+    this.rows += 1;
+    this.waves.push(new Wave(this));
   }
 }
 
