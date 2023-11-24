@@ -6,6 +6,7 @@ class Player {
     this.x = this.game.width * 0.5 - this.width * 0.5;
     this.y = this.game.height - this.height;
     this.speed = 5;
+    this.lives = 3;
   }
 
   draw(context) {
@@ -82,6 +83,14 @@ class Enemy {
         this.game.score += 1;
       }
     });
+    //check collision enemies - player
+    if (this.game.checkCollision(this, this.game.player)) {
+      this.markedForDeletion = true;
+
+      if (!this.game.gameOver && this.game.score > 0) this.game.score -= 1;
+      this.game.player.lives -= 1;
+      if (this.game.player.lives < 1) this.game.gameOver = true;
+    }
     //lose condition
     if (this.y + this.height > this.game.height) {
       this.game.gameOver = true;
@@ -207,6 +216,17 @@ class Game {
     context.shadowColor = 'purple';
     context.fillText(`Score: ${this.score}`, 20, 40);
     context.fillText(`Wave: ${this.waveCount}`, 20, 65);
+
+    const liveShape = { marginLeft: 20, marginTop: 80, gap: 10, width: 5, height: 15 };
+    for (let i = 0; i < this.player.lives; i++) {
+      context.fillRect(
+        liveShape.marginLeft + liveShape.gap * i,
+        liveShape.marginTop,
+        liveShape.width,
+        liveShape.height
+      );
+    }
+
     if (this.gameOver) {
       context.textAlign = 'center';
       context.font = '80px Monospace';
