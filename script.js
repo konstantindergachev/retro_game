@@ -6,6 +6,7 @@ class Player {
     this.x = this.game.width * 0.5 - this.width * 0.5;
     this.y = this.game.height - this.height;
     this.speed = 5;
+    this.lives = 3;
   }
 
   draw(context) {
@@ -65,6 +66,7 @@ class Enemy {
     this.y = 0;
     this.positionX = positionX;
     this.positionY = positionY;
+    this.markedForDeletion = false;
   }
 
   draw(context) {
@@ -73,6 +75,27 @@ class Enemy {
   update(x, y) {
     this.x = x + this.positionX;
     this.y = y + this.positionY;
+    //check enemies collision - projectiles
+    this.game.projectilesPool.forEach((projectile) => {
+      if (!projectile.free && this.game.checkCollision(this, projectile)) {
+        this.markedForDeletion = true;
+        projectile.reset();
+        this.game.score += 1;
+      }
+    });
+    //check collision enemies - player
+    if (this.game.checkCollision(this, this.game.player)) {
+      this.markedForDeletion = true;
+
+      if (!this.game.gameOver && this.game.score > 0) this.game.score -= 1;
+      this.game.player.lives -= 1;
+      if (this.game.player.lives < 1) this.game.gameOver = true;
+    }
+    //lose condition
+    if (this.y + this.height > this.game.height) {
+      this.game.gameOver = true;
+      this.markedForDeletion = true;
+    }
   }
 }
 
@@ -86,6 +109,7 @@ class Wave {
     this.speedX = 3;
     this.speedY = 0;
     this.enemies = [];
+    this.nextWaveTrigger = false;
     this.create();
   }
 
@@ -103,6 +127,7 @@ class Wave {
       enemy.update(this.x, this.y);
       enemy.draw(context);
     });
+    this.enemies = this.enemies.filter((enemy) => !enemy.markedForDeletion);
   }
   create() {
     for (let y = 0; y < this.game.rows; y++) {
@@ -127,12 +152,16 @@ class Game {
     this.numberOfProjectiles = 10;
     this.createProjectiles();
 
-    this.columns = 3;
-    this.rows = 3;
+    this.columns = 5;
+    this.rows = 5;
     this.enemySize = 60;
 
     this.waves = [];
     this.waves.push(new Wave(this));
+    this.waveCount = 1;
+
+    this.score = 0;
+    this.gameOver = false;
 
     window.addEventListener('keydown', (ev) => {
       if (!this.keys.includes(ev.key)) this.keys.push(ev.key);
@@ -145,6 +174,7 @@ class Game {
   }
 
   render(context) {
+    this.drawStatusText(context);
     this.player.draw(context);
     this.player.update();
     this.projectilesPool.forEach((projectile) => {
@@ -153,6 +183,11 @@ class Game {
     });
     this.waves.forEach((wave) => {
       wave.render(context);
+      if (wave.enemies.length < 1 && !wave.nextWaveTrigger && !this.gameOver) {
+        this.newWave();
+        this.waveCount += 1;
+        wave.nextWaveTrigger = true;
+      }
     });
   }
 
@@ -168,6 +203,45 @@ class Game {
       if (this.projectilesPool[i].free) return this.projectilesPool[i];
     }
   }
+  //collision detection between 2 rectangles
+  checkCollision(a, b) {
+    return (
+      a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y
+    );
+  }
+  drawStatusText(context) {
+    context.save();
+    context.shadowOffsetX = 2;
+    context.shadowOffsetY = 2;
+    context.shadowColor = 'purple';
+    context.fillText(`Score: ${this.score}`, 20, 40);
+    context.fillText(`Wave: ${this.waveCount}`, 20, 65);
+
+    const liveShape = { marginLeft: 20, marginTop: 80, gap: 10, width: 5, height: 15 };
+    for (let i = 0; i < this.player.lives; i++) {
+      context.fillRect(
+        liveShape.marginLeft + liveShape.gap * i,
+        liveShape.marginTop,
+        liveShape.width,
+        liveShape.height
+      );
+    }
+
+    if (this.gameOver) {
+      context.textAlign = 'center';
+      context.font = '80px Monospace';
+      context.fillText('GAME OVER!', this.width * 0.5, this.height * 0.5);
+    }
+    context.restore();
+  }
+  newWave() {
+    if (Math.random() < 0.5 && this.columns * this.enemySize < this.width * 0.8) {
+      this.columns += 1;
+    } else if (this.rows * this.enemySize < this.enemySize * 0.6) {
+      this.rows += 1;
+    }
+    this.waves.push(new Wave(this));
+  }
 }
 
 window.addEventListener('load', () => {
@@ -178,6 +252,7 @@ window.addEventListener('load', () => {
   ctx.fillStyle = 'white';
   ctx.strokeStyle = 'white';
   ctx.lineWidth = 2;
+  ctx.font = '18px Monospace';
 
   const game = new Game(canvas);
   function animate() {
