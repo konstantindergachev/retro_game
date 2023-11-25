@@ -26,6 +26,11 @@ class Player {
     const projectile = this.game.getProjectile();
     if (projectile) projectile.start(this.x + this.width * 0.5, this.y);
   }
+  restart() {
+    this.x = this.game.width * 0.5 - this.width * 0.5;
+    this.y = this.game.height - this.height;
+    this.lives = 3;
+  }
 }
 class Projectile {
   constructor() {
@@ -80,7 +85,7 @@ class Enemy {
       if (!projectile.free && this.game.checkCollision(this, projectile)) {
         this.markedForDeletion = true;
         projectile.reset();
-        this.game.score += 1;
+        if (!this.game.gameOver) this.game.score += 1;
       }
     });
     //check collision enemies - player
@@ -152,8 +157,8 @@ class Game {
     this.numberOfProjectiles = 10;
     this.createProjectiles();
 
-    this.columns = 5;
-    this.rows = 5;
+    this.columns = 2;
+    this.rows = 2;
     this.enemySize = 60;
 
     this.waves = [];
@@ -166,6 +171,7 @@ class Game {
     window.addEventListener('keydown', (ev) => {
       if (!this.keys.includes(ev.key)) this.keys.push(ev.key);
       if (ev.key === '1') this.player.shoot();
+      if (ev.key === 'r' && this.gameOver) this.restart();
     });
     window.addEventListener('keyup', (ev) => {
       const index = this.keys.indexOf(ev.key);
@@ -187,6 +193,7 @@ class Game {
         this.newWave();
         this.waveCount += 1;
         wave.nextWaveTrigger = true;
+        this.player.lives += 1;
       }
     });
   }
@@ -231,6 +238,8 @@ class Game {
       context.textAlign = 'center';
       context.font = '80px Monospace';
       context.fillText('GAME OVER!', this.width * 0.5, this.height * 0.5);
+      context.font = '20px Monospace';
+      context.fillText('Press R to restart!', this.width * 0.5, this.height * 0.5 + 30);
     }
     context.restore();
   }
@@ -241,6 +250,16 @@ class Game {
       this.rows += 1;
     }
     this.waves.push(new Wave(this));
+  }
+  restart() {
+    this.player.restart();
+    this.columns = 2;
+    this.rows = 2;
+    this.waves = [];
+    this.waves.push(new Wave(this));
+    this.waveCount = 1;
+    this.score = 0;
+    this.gameOver = false;
   }
 }
 
