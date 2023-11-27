@@ -76,6 +76,22 @@ class Enemy {
 
   draw(context) {
     context.strokeRect(this.x, this.y, this.width, this.height);
+
+    let sourceX = this.frameX * this.width;
+    let sourceY = this.frameY * this.height;
+    const sourceWidth = this.width;
+    const sourceHeight = this.height;
+    context.drawImage(
+      this.image,
+      sourceX,
+      sourceY,
+      sourceWidth,
+      sourceHeight,
+      this.x,
+      this.y,
+      this.width,
+      this.height
+    );
   }
   update(x, y) {
     this.x = x + this.positionX;
@@ -101,6 +117,14 @@ class Enemy {
       this.game.gameOver = true;
       this.markedForDeletion = true;
     }
+  }
+}
+class Beetlemorph extends Enemy {
+  constructor(game, positionX, positionY) {
+    super(game, positionX, positionY);
+    this.image = document.getElementById('beetlemorph');
+    this.frameX = 0;
+    this.frameY = Math.floor(Math.random() * 4);
   }
 }
 
@@ -139,7 +163,7 @@ class Wave {
       for (let x = 0; x < this.game.columns; x++) {
         let enemyX = x * this.game.enemySize;
         let enemyY = y * this.game.enemySize;
-        this.enemies.push(new Enemy(this.game, enemyX, enemyY));
+        this.enemies.push(new Beetlemorph(this.game, enemyX, enemyY));
       }
     }
   }
@@ -156,10 +180,11 @@ class Game {
     this.projectilesPool = [];
     this.numberOfProjectiles = 10;
     this.createProjectiles();
+    this.fired = false;
 
     this.columns = 2;
     this.rows = 2;
-    this.enemySize = 60;
+    this.enemySize = 80;
 
     this.waves = [];
     this.waves.push(new Wave(this));
@@ -169,11 +194,13 @@ class Game {
     this.gameOver = false;
 
     window.addEventListener('keydown', (ev) => {
+      if (ev.key === '1' && !this.fired) this.player.shoot();
+      this.fired = true;
       if (!this.keys.includes(ev.key)) this.keys.push(ev.key);
-      if (ev.key === '1') this.player.shoot();
       if (ev.key === 'r' && this.gameOver) this.restart();
     });
     window.addEventListener('keyup', (ev) => {
+      this.fired = false;
       const index = this.keys.indexOf(ev.key);
       if (index > -1) this.keys.splice(index, 1);
     });
