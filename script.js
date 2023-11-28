@@ -99,11 +99,17 @@ class Enemy {
     //check enemies collision - projectiles
     this.game.projectilesPool.forEach((projectile) => {
       if (!projectile.free && this.game.checkCollision(this, projectile)) {
-        this.markedForDeletion = true;
+        this.hit(1);
         projectile.reset();
-        if (!this.game.gameOver) this.game.score += 1;
       }
     });
+    if (this.lives < 1) {
+      this.frameX += 1;
+      if (this.frameX > this.maxFrame) {
+        this.markedForDeletion = true;
+        if (!this.game.gameOver) this.game.score += this.maxLives;
+      }
+    }
     //check collision enemies - player
     if (this.game.checkCollision(this, this.game.player)) {
       this.markedForDeletion = true;
@@ -118,13 +124,19 @@ class Enemy {
       this.markedForDeletion = true;
     }
   }
+  hit(damage) {
+    this.lives -= damage;
+  }
 }
 class Beetlemorph extends Enemy {
   constructor(game, positionX, positionY) {
     super(game, positionX, positionY);
     this.image = document.getElementById('beetlemorph');
     this.frameX = 0;
+    this.maxFrame = 2;
     this.frameY = Math.floor(Math.random() * 4);
+    this.lives = 1;
+    this.maxLives = this.lives;
   }
 }
 
