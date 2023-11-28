@@ -75,8 +75,6 @@ class Enemy {
   }
 
   draw(context) {
-    context.strokeRect(this.x, this.y, this.width, this.height);
-
     let sourceX = this.frameX * this.width;
     let sourceY = this.frameY * this.height;
     const sourceWidth = this.width;
@@ -145,9 +143,9 @@ class Wave {
     this.game = game;
     this.width = this.game.columns * this.game.enemySize;
     this.height = this.game.rows * this.game.enemySize;
-    this.x = 0;
+    this.x = this.game.width * 0.5 - this.width * 0.5;
     this.y = -this.height;
-    this.speedX = 3;
+    this.speedX = Math.random() < 0.5 ? -1 : 1;
     this.speedY = 0;
     this.enemies = [];
     this.nextWaveTrigger = false;
