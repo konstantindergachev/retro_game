@@ -7,15 +7,36 @@ class Player {
     this.y = this.game.height - this.height;
     this.speed = 5;
     this.lives = 3;
+    this.maxLives = 10;
     this.image = document.getElementById('player');
+    this.image_jets = document.getElementById('player_jets');
     this.frameX = 0;
+    this.jetsFrame = 1;
   }
 
   draw(context) {
-    let sourceX = this.frameX * this.width;
+    //handle sprite frames
+    if (this.game.keys.includes('1')) {
+      this.frameX = 1;
+    } else {
+      this.frameX = 0;
+    }
+    let jetsSourceX = this.jetsFrame * this.width;
     let sourceY = 0;
     const sourceWidth = this.width;
     const sourceHeight = this.height;
+    context.drawImage(
+      this.image_jets,
+      jetsSourceX,
+      sourceY,
+      sourceWidth,
+      sourceHeight,
+      this.x,
+      this.y,
+      this.width,
+      this.height
+    );
+    let sourceX = this.frameX * this.width;
     context.drawImage(
       this.image,
       sourceX,
@@ -30,8 +51,15 @@ class Player {
   }
   update() {
     //horizontal movement
-    if (this.game.keys.includes('ArrowLeft')) this.x -= this.speed;
-    if (this.game.keys.includes('ArrowRight')) this.x += this.speed;
+    if (this.game.keys.includes('ArrowLeft')) {
+      this.x -= this.speed;
+      this.jetsFrame = 0;
+    } else if (this.game.keys.includes('ArrowRight')) {
+      this.x += this.speed;
+      this.jetsFrame = 2;
+    } else {
+      this.jetsFrame = 1;
+    }
 
     //horizontal boundaries
     if (this.x < -this.width * 0.5) this.x = -this.width * 0.5;
@@ -128,17 +156,13 @@ class Enemy {
       }
     }
     //check collision enemies - player
-    if (this.game.checkCollision(this, this.game.player)) {
-      this.markedForDeletion = true;
-
-      if (!this.game.gameOver && this.game.score > 0) this.game.score -= 1;
+    if (this.game.checkCollision(this, this.game.player) && this.lives > 0) {
+      this.lives = 0;
       this.game.player.lives -= 1;
-      if (this.game.player.lives < 1) this.game.gameOver = true;
     }
     //lose condition
-    if (this.y + this.height > this.game.height) {
+    if (this.y + this.height > this.game.height || this.game.player.lives < 1) {
       this.game.gameOver = true;
-      this.markedForDeletion = true;
     }
   }
   hit(damage) {
@@ -207,12 +231,12 @@ class Game {
     this.player = new Player(this);
 
     this.projectilesPool = [];
-    this.numberOfProjectiles = 10;
+    this.numberOfProjectiles = 15;
     this.createProjectiles();
     this.fired = false;
 
-    this.columns = 2;
-    this.rows = 2;
+    this.columns = 1;
+    this.rows = 1;
     this.enemySize = 80;
 
     this.waves = [];
@@ -221,7 +245,7 @@ class Game {
 
     this.spriteUpdate = false;
     this.spriteTimer = 0;
-    this.spriteInterval = 120;
+    this.spriteInterval = 150;
 
     this.score = 0;
     this.gameOver = false;
@@ -249,19 +273,19 @@ class Game {
       this.spriteTimer += deltaTime;
     }
     this.drawStatusText(context);
-    this.player.draw(context);
-    this.player.update();
     this.projectilesPool.forEach((projectile) => {
       projectile.update();
       projectile.draw(context);
     });
+    this.player.draw(context);
+    this.player.update();
     this.waves.forEach((wave) => {
       wave.render(context);
       if (wave.enemies.length < 1 && !wave.nextWaveTrigger && !this.gameOver) {
         this.newWave();
         this.waveCount += 1;
         wave.nextWaveTrigger = true;
-        this.player.lives += 1;
+        if (this.player.lives < this.player.maxLives) this.player.lives += 1;
       }
     });
   }
@@ -292,7 +316,16 @@ class Game {
     context.fillText(`Score: ${this.score}`, 20, 40);
     context.fillText(`Wave: ${this.waveCount}`, 20, 65);
 
-    const liveShape = { marginLeft: 20, marginTop: 80, gap: 10, width: 5, height: 15 };
+    const maxLiveShape = { marginLeft: 20, marginTop: 80, gap: 10, width: 5, height: 9 };
+    for (let i = 0; i < this.player.maxLives; i++) {
+      context.strokeRect(
+        maxLiveShape.marginLeft + maxLiveShape.gap * i,
+        maxLiveShape.marginTop,
+        maxLiveShape.width,
+        maxLiveShape.height
+      );
+    }
+    const liveShape = { marginLeft: 20, marginTop: 80, gap: 10, width: 5, height: 9 };
     for (let i = 0; i < this.player.lives; i++) {
       context.fillRect(
         liveShape.marginLeft + liveShape.gap * i,
@@ -338,7 +371,6 @@ window.addEventListener('load', () => {
   canvas.height = 800;
   ctx.fillStyle = 'white';
   ctx.strokeStyle = 'white';
-  ctx.lineWidth = 2;
   ctx.font = '18px Monospace';
 
   let lastTime = 0;
