@@ -8,7 +8,9 @@ class Player {
     this.speed = 5;
     this.lives = 3;
     this.image = document.getElementById('player');
+    this.image_jets = document.getElementById('player_jets');
     this.frameX = 0;
+    this.jetsFrame = 1;
   }
 
   draw(context) {
@@ -18,10 +20,22 @@ class Player {
     } else {
       this.frameX = 0;
     }
-    let sourceX = this.frameX * this.width;
+    let jetsSourceX = this.jetsFrame * this.width;
     let sourceY = 0;
     const sourceWidth = this.width;
     const sourceHeight = this.height;
+    context.drawImage(
+      this.image_jets,
+      jetsSourceX,
+      sourceY,
+      sourceWidth,
+      sourceHeight,
+      this.x,
+      this.y,
+      this.width,
+      this.height
+    );
+    let sourceX = this.frameX * this.width;
     context.drawImage(
       this.image,
       sourceX,
@@ -36,8 +50,15 @@ class Player {
   }
   update() {
     //horizontal movement
-    if (this.game.keys.includes('ArrowLeft')) this.x -= this.speed;
-    if (this.game.keys.includes('ArrowRight')) this.x += this.speed;
+    if (this.game.keys.includes('ArrowLeft')) {
+      this.x -= this.speed;
+      this.jetsFrame = 0;
+    } else if (this.game.keys.includes('ArrowRight')) {
+      this.x += this.speed;
+      this.jetsFrame = 2;
+    } else {
+      this.jetsFrame = 1;
+    }
 
     //horizontal boundaries
     if (this.x < -this.width * 0.5) this.x = -this.width * 0.5;
