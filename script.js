@@ -347,7 +347,7 @@ class Game {
   newWave() {
     if (Math.random() < 0.5 && this.columns * this.enemySize < this.width * 0.8) {
       this.columns += 1;
-    } else if (this.rows * this.enemySize < this.enemySize * 0.6) {
+    } else if (this.rows * this.enemySize < this.height * 0.6) {
       this.rows += 1;
     }
     this.waves.push(new Wave(this));
