@@ -1,0 +1,39 @@
+*,
+*:after,
+*:before {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+html,
+body {
+  height: 100%;
+}
+
+body,
+button,
+input,
+table,
+textarea,
+select {
+  font: normal 16px/1.5 monospace;
+}
+
+body {
+  overflow: hidden;
+}
+
+#canvas1 {
+  border: 5px solid black;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: url('../images/background.png');
+}
+
+#beetlemorph,
+#player,
+#player_jets {
+  display: none;
+}
