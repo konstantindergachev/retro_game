@@ -11,6 +11,7 @@ export class Wave {
     this.speedY = 0;
     this.enemies = [];
     this.nextWaveTrigger = false;
+    this.markedForDeletion = false;
     this.create();
   }
 
@@ -29,6 +30,7 @@ export class Wave {
       enemy.draw(context);
     });
     this.enemies = this.enemies.filter((enemy) => !enemy.markedForDeletion);
+    if (this.enemies.length <= 0) this.markedForDeletion = true;
   }
   create() {
     for (let y = 0; y < this.game.rows; y++) {

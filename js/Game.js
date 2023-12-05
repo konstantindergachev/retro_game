@@ -1,6 +1,7 @@
 import { Player } from './Player.js';
 import { Wave } from './Wave.js';
 import { Projectile } from './Projectale.js';
+import { Boss } from './Boss.js';
 
 export class Game {
   constructor(canvas) {
@@ -20,7 +21,6 @@ export class Game {
     this.enemySize = 80;
 
     this.waves = [];
-    this.waves.push(new Wave(this));
     this.waveCount = 1;
 
     this.spriteUpdate = false;
@@ -29,6 +29,9 @@ export class Game {
 
     this.score = 0;
     this.gameOver = false;
+
+    this.bosses = [];
+    this.restart();
 
     window.addEventListener('keydown', (ev) => {
       if (ev.key === '1' && !this.fired) this.player.shoot();
@@ -56,6 +59,10 @@ export class Game {
     this.projectilesPool.forEach((projectile) => {
       projectile.update();
       projectile.draw(context);
+    });
+    this.bosses.forEach((boss) => {
+      boss.draw(context);
+      boss.update();
     });
     this.player.draw(context);
     this.player.update();
@@ -131,13 +138,16 @@ export class Game {
       this.rows += 1;
     }
     this.waves.push(new Wave(this));
+    this.waves = this.waves.filter((wave) => !wave.markedForDeletion);
   }
   restart() {
     this.player.restart();
     this.columns = 2;
     this.rows = 2;
     this.waves = [];
-    this.waves.push(new Wave(this));
+    this.bosses = [];
+    // this.waves.push(new Wave(this));
+    this.bosses.push(new Boss(this));
     this.waveCount = 1;
     this.score = 0;
     this.gameOver = false;
