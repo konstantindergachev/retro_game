@@ -48,5 +48,13 @@ export class Boss {
     }
     this.speedX += this.speedX;
     this.speedY += this.speedY;
+
+    //collision detection boss/projectiles
+    this.game.projectilesPool.forEach((projectile) => {
+      if (this.game.checkCollision(this, projectile) && !projectile.free && this.lives > 0) {
+        this.lives -= 1;
+        projectile.reset();
+      }
+    });
   }
 }
