@@ -31,13 +31,16 @@ export class Boss {
       this.width,
       this.height
     );
-    context.save();
-    context.textAlign = 'center';
-    context.shadowOffsetX = 3;
-    context.shadowOffsetY = 3;
-    context.shadowColor = 'black';
-    context.fillText(this.lives, this.x + this.width * 0.5, this.y + 50);
-    context.restore();
+
+    if (this.lives > 0) {
+      context.save();
+      context.textAlign = 'center';
+      context.shadowOffsetX = 3;
+      context.shadowOffsetY = 3;
+      context.shadowColor = 'black';
+      context.fillText(this.lives, this.x + this.width * 0.5, this.y + 50);
+      context.restore();
+    }
   }
   update() {
     this.speedY = 0;
@@ -57,9 +60,17 @@ export class Boss {
         projectile.reset();
       }
     });
+    //boss destroyed
+    if (this.lives < 1 && this.game.spriteUpdate) {
+      this.frameX += 1;
+      if (this.frameX > this.maxFrame) {
+        this.markedForDeletion = true;
+        this.game.score += this.maxLives;
+      }
+    }
   }
   hit(damage) {
     this.lives -= damage;
-    if (this.lives > 1) this.frameX = 1;
+    if (this.lives > 0) this.frameX = 1;
   }
 }

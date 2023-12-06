@@ -64,6 +64,7 @@ export class Game {
       boss.draw(context);
       boss.update();
     });
+    this.bosses = this.bosses.filter((boss) => !boss.markedForDeletion);
     this.player.draw(context);
     this.player.update();
     this.waves.forEach((wave) => {
