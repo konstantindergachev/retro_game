@@ -41,6 +41,7 @@ export class Boss {
   }
   update() {
     this.speedY = 0;
+    if (this.game.spriteUpdate && this.lives > 0) this.frameX = 0;
     if (this.y < 0) this.y += 4;
     if (this.x < 0 || this.x > this.game.width - this.width) {
       this.speedX *= -1;
@@ -52,9 +53,13 @@ export class Boss {
     //collision detection boss/projectiles
     this.game.projectilesPool.forEach((projectile) => {
       if (this.game.checkCollision(this, projectile) && !projectile.free && this.lives > 0) {
-        this.lives -= 1;
+        this.hit(1);
         projectile.reset();
       }
     });
+  }
+  hit(damage) {
+    this.lives -= damage;
+    if (this.lives > 1) this.frameX = 1;
   }
 }
