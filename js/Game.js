@@ -71,7 +71,6 @@ export class Game {
       wave.render(context);
       if (wave.enemies.length < 1 && !wave.nextWaveTrigger && !this.gameOver) {
         this.newWave();
-        this.waveCount += 1;
         wave.nextWaveTrigger = true;
         if (this.player.lives < this.player.maxLives) this.player.lives += 1;
       }
@@ -133,12 +132,17 @@ export class Game {
     context.restore();
   }
   newWave() {
-    if (Math.random() < 0.5 && this.columns * this.enemySize < this.width * 0.8) {
-      this.columns += 1;
-    } else if (this.rows * this.enemySize < this.height * 0.6) {
-      this.rows += 1;
+    this.waveCount += 1;
+    if (this.waveCount % 2 === 0) {
+      this.bosses.push(new Boss(this));
+    } else {
+      if (Math.random() < 0.5 && this.columns * this.enemySize < this.width * 0.8) {
+        this.columns += 1;
+      } else if (this.rows * this.enemySize < this.height * 0.6) {
+        this.rows += 1;
+      }
+      this.waves.push(new Wave(this));
     }
-    this.waves.push(new Wave(this));
     this.waves = this.waves.filter((wave) => !wave.markedForDeletion);
   }
   restart() {
