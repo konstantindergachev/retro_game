@@ -60,6 +60,11 @@ export class Boss {
         projectile.reset();
       }
     });
+    //collision detection boss/player
+    if (this.game.checkCollision(this, this.game.player) && this.lives > 0) {
+      this.game.gameOver = true;
+      this.lives = 0;
+    }
     //boss destroyed
     if (this.lives < 1 && this.game.spriteUpdate) {
       this.frameX += 1;
