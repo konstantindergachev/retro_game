@@ -73,6 +73,8 @@ export class Boss {
         this.game.score += this.maxLives;
       }
     }
+    //lose condition when boss touches the down of the screen
+    if (this.y + this.height > this.game.height) this.game.gameOver = true;
   }
   hit(damage) {
     this.lives -= damage;
