@@ -71,9 +71,11 @@ export class Boss {
       if (this.frameX > this.maxFrame) {
         this.markedForDeletion = true;
         this.game.score += this.maxLives;
+        //the new wave of enemies when the game is over by destroyed the boss
+        if (!this.game.gameOver) this.game.newWave();
       }
     }
-    //lose condition when boss touches the down of the screen
+    //lose condition when the boss touches the down of the screen
     if (this.y + this.height > this.game.height) this.game.gameOver = true;
   }
   hit(damage) {
