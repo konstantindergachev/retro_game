@@ -31,6 +31,7 @@ export class Game {
     this.gameOver = false;
 
     this.bosses = [];
+    this.bossLives = 10;
     this.restart();
 
     window.addEventListener('keydown', (ev) => {
@@ -134,7 +135,7 @@ export class Game {
     this.waveCount += 1;
     if (this.player.lives < this.player.maxLives) this.player.lives += 1;
     if (this.waveCount % 2 === 0) {
-      this.bosses.push(new Boss(this));
+      this.bosses.push(new Boss(this, this.bossLives));
     } else {
       if (Math.random() < 0.5 && this.columns * this.enemySize < this.width * 0.8) {
         this.columns += 1;
@@ -151,8 +152,9 @@ export class Game {
     this.rows = 2;
     this.waves = [];
     this.bosses = [];
+    this.bossLives = 10;
     // this.waves.push(new Wave(this));
-    this.bosses.push(new Boss(this));
+    this.bosses.push(new Boss(this, this.bossLives));
     this.waveCount = 1;
     this.score = 0;
     this.gameOver = false;

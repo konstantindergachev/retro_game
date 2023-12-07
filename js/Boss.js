@@ -1,5 +1,5 @@
 export class Boss {
-  constructor(game) {
+  constructor(game, bossLives) {
     this.game = game;
     this.width = 200;
     this.height = 200;
@@ -7,7 +7,7 @@ export class Boss {
     this.y = -this.height;
     this.speedX = Math.random() < 0.5 ? -1 : 1;
     this.speedY = 0;
-    this.lives = 10;
+    this.lives = bossLives;
     this.maxLives = this.lives;
     this.markedForDeletion = false;
     this.image = document.getElementById('boss');
@@ -71,6 +71,7 @@ export class Boss {
       if (this.frameX > this.maxFrame) {
         this.markedForDeletion = true;
         this.game.score += this.maxLives;
+        this.game.bossLives += 5;
         //the new wave of enemies when the game is over by destroyed the boss
         if (!this.game.gameOver) this.game.newWave();
       }
