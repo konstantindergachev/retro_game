@@ -72,7 +72,6 @@ export class Game {
       if (wave.enemies.length < 1 && !wave.nextWaveTrigger && !this.gameOver) {
         this.newWave();
         wave.nextWaveTrigger = true;
-        if (this.player.lives < this.player.maxLives) this.player.lives += 1;
       }
     });
   }
@@ -133,6 +132,7 @@ export class Game {
   }
   newWave() {
     this.waveCount += 1;
+    if (this.player.lives < this.player.maxLives) this.player.lives += 1;
     if (this.waveCount % 2 === 0) {
       this.bosses.push(new Boss(this));
     } else {
