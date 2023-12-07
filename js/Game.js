@@ -1,6 +1,7 @@
 import { Player } from './Player.js';
 import { Wave } from './Wave.js';
 import { Projectile } from './Projectale.js';
+import { Boss } from './Boss.js';
 
 export class Game {
   constructor(canvas) {
@@ -20,7 +21,6 @@ export class Game {
     this.enemySize = 80;
 
     this.waves = [];
-    this.waves.push(new Wave(this));
     this.waveCount = 1;
 
     this.spriteUpdate = false;
@@ -29,6 +29,10 @@ export class Game {
 
     this.score = 0;
     this.gameOver = false;
+
+    this.bosses = [];
+    this.bossLives = 10;
+    this.restart();
 
     window.addEventListener('keydown', (ev) => {
       if (ev.key === '1' && !this.fired) this.player.shoot();
@@ -57,15 +61,18 @@ export class Game {
       projectile.update();
       projectile.draw(context);
     });
+    this.bosses.forEach((boss) => {
+      boss.draw(context);
+      boss.update();
+    });
+    this.bosses = this.bosses.filter((boss) => !boss.markedForDeletion);
     this.player.draw(context);
     this.player.update();
     this.waves.forEach((wave) => {
       wave.render(context);
       if (wave.enemies.length < 1 && !wave.nextWaveTrigger && !this.gameOver) {
         this.newWave();
-        this.waveCount += 1;
         wave.nextWaveTrigger = true;
-        if (this.player.lives < this.player.maxLives) this.player.lives += 1;
       }
     });
   }
@@ -125,19 +132,29 @@ export class Game {
     context.restore();
   }
   newWave() {
-    if (Math.random() < 0.5 && this.columns * this.enemySize < this.width * 0.8) {
-      this.columns += 1;
-    } else if (this.rows * this.enemySize < this.height * 0.6) {
-      this.rows += 1;
+    this.waveCount += 1;
+    if (this.player.lives < this.player.maxLives) this.player.lives += 1;
+    if (this.waveCount % 2 === 0) {
+      this.bosses.push(new Boss(this, this.bossLives));
+    } else {
+      if (Math.random() < 0.5 && this.columns * this.enemySize < this.width * 0.8) {
+        this.columns += 1;
+      } else if (this.rows * this.enemySize < this.height * 0.6) {
+        this.rows += 1;
+      }
+      this.waves.push(new Wave(this));
     }
-    this.waves.push(new Wave(this));
+    this.waves = this.waves.filter((wave) => !wave.markedForDeletion);
   }
   restart() {
     this.player.restart();
     this.columns = 2;
     this.rows = 2;
     this.waves = [];
-    this.waves.push(new Wave(this));
+    this.bosses = [];
+    this.bossLives = 10;
+    // this.waves.push(new Wave(this));
+    this.bosses.push(new Boss(this, this.bossLives));
     this.waveCount = 1;
     this.score = 0;
     this.gameOver = false;
