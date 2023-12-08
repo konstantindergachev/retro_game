@@ -153,8 +153,7 @@ export class Game {
     this.waves = [];
     this.bosses = [];
     this.bossLives = 10;
-    // this.waves.push(new Wave(this));
-    this.bosses.push(new Boss(this, this.bossLives));
+    this.waves.push(new Wave(this));
     this.waveCount = 1;
     this.score = 0;
     this.gameOver = false;
