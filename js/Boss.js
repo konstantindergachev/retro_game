@@ -50,12 +50,17 @@ export class Boss {
       this.speedX *= -1;
       this.speedY = this.height * 0.5;
     }
-    this.speedX += this.speedX;
-    this.speedY += this.speedY;
+    this.x += this.speedX;
+    this.y += this.speedY;
 
     //collision detection boss/projectiles
     this.game.projectilesPool.forEach((projectile) => {
-      if (this.game.checkCollision(this, projectile) && !projectile.free && this.lives > 0) {
+      if (
+        this.game.checkCollision(this, projectile) &&
+        !projectile.free &&
+        this.lives > 0 &&
+        this.y >= 0
+      ) {
         this.hit(1);
         projectile.reset();
       }
