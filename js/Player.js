@@ -1,3 +1,5 @@
+import { SmallLaser } from './Laser.js';
+
 export class Player {
   constructor(game) {
     this.game = game;
@@ -12,12 +14,16 @@ export class Player {
     this.image_jets = document.getElementById('player_jets');
     this.frameX = 0;
     this.jetsFrame = 1;
+    this.smallLaser = new SmallLaser(this.game);
   }
 
   draw(context) {
     //handle sprite frames
     if (this.game.keys.includes('1')) {
       this.frameX = 1;
+    } else if (this.game.keys.includes('2')) {
+      this.frameX = 2;
+      this.smallLaser.render(context);
     } else {
       this.frameX = 0;
     }
