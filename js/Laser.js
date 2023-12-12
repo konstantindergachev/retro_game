@@ -11,13 +11,31 @@ class Laser {
     context.save();
     context.fillStyle = 'gold';
     context.fillRect(this.x, this.y, this.width, this.height);
+    context.fillStyle = 'white';
+    context.fillRect(this.x + this.width * 0.2, this.y, this.width * 0.6, this.height);
     context.restore();
+
+    if (this.game.spriteUpdate) {
+      this.game.waves.forEach((wave) => {
+        wave.enemies.forEach((enemy) => {
+          if (this.game.checkCollision(enemy, this)) {
+            enemy.hit(this.damage);
+          }
+        });
+      });
+      this.game.bosses.forEach((boss) => {
+        if (this.game.checkCollision(boss, this)) {
+          boss.hit(this.damage);
+        }
+      });
+    }
   }
 }
 export class SmallLaser extends Laser {
   constructor(game) {
     super(game);
     this.width = 5;
+    this.damage = 0.3;
   }
   render(context) {
     super.render(context);
