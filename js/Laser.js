@@ -24,7 +24,7 @@ class Laser {
         });
       });
       this.game.bosses.forEach((boss) => {
-        if (this.game.checkCollision(boss, this)) {
+        if (this.game.checkCollision(boss, this) && boss.y >= 0) {
           boss.hit(this.damage);
         }
       });
