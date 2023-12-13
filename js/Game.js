@@ -122,6 +122,19 @@ export class Game {
       );
     }
 
+    context.save();
+    this.player.cooldown ? (context.fillStyle = 'red') : (context.fillStyle = 'gold');
+    const energyShape = { marginLeft: 20, marginTop: 103, gap: 2, width: 2, height: 9 };
+    for (let i = 0; i < this.player.energy; i++) {
+      context.fillRect(
+        energyShape.marginLeft + energyShape.gap * i,
+        energyShape.marginTop,
+        energyShape.width,
+        energyShape.height
+      );
+    }
+    context.restore();
+
     if (this.gameOver) {
       context.textAlign = 'center';
       context.font = '80px Monospace';

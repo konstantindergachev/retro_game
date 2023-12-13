@@ -16,6 +16,9 @@ export class Player {
     this.jetsFrame = 1;
     this.smallLaser = new SmallLaser(this.game);
     this.bigLaser = new BigLaser(this.game);
+    this.energy = 25;
+    this.maxEnergy = 47;
+    this.cooldown = false;
   }
 
   draw(context) {
@@ -23,10 +26,8 @@ export class Player {
     if (this.game.keys.includes('1')) {
       this.frameX = 1;
     } else if (this.game.keys.includes('2')) {
-      this.frameX = 2;
       this.smallLaser.render(context);
     } else if (this.game.keys.includes('3')) {
-      this.frameX = 3;
       this.bigLaser.render(context);
     } else {
       this.frameX = 0;
@@ -60,6 +61,11 @@ export class Player {
     );
   }
   update() {
+    //energy recharge
+    if (this.energy < this.maxEnergy) this.energy += 0.05;
+    if (this.energy < 1) this.cooldown = true;
+    else if (this.energy > this.maxEnergy * 0.3) this.cooldown = false;
+
     //horizontal movement
     if (this.game.keys.includes('ArrowLeft')) {
       this.x -= this.speed;
