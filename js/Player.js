@@ -1,4 +1,4 @@
-import { SmallLaser } from './Laser.js';
+import { BigLaser, SmallLaser } from './Laser.js';
 
 export class Player {
   constructor(game) {
@@ -15,6 +15,7 @@ export class Player {
     this.frameX = 0;
     this.jetsFrame = 1;
     this.smallLaser = new SmallLaser(this.game);
+    this.bigLaser = new BigLaser(this.game);
   }
 
   draw(context) {
@@ -24,6 +25,9 @@ export class Player {
     } else if (this.game.keys.includes('2')) {
       this.frameX = 2;
       this.smallLaser.render(context);
+    } else if (this.game.keys.includes('3')) {
+      this.frameX = 3;
+      this.bigLaser.render(context);
     } else {
       this.frameX = 0;
     }
