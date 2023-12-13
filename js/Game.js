@@ -61,13 +61,13 @@ export class Game {
       projectile.update();
       projectile.draw(context);
     });
+    this.player.draw(context);
+    this.player.update();
     this.bosses.forEach((boss) => {
       boss.draw(context);
       boss.update();
     });
     this.bosses = this.bosses.filter((boss) => !boss.markedForDeletion);
-    this.player.draw(context);
-    this.player.update();
     this.waves.forEach((wave) => {
       wave.render(context);
       if (wave.enemies.length < 1 && !wave.nextWaveTrigger && !this.gameOver) {
