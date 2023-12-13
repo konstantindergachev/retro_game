@@ -7,6 +7,7 @@ class Laser {
   }
   render(context) {
     this.x = this.game.player.x + this.game.player.width * 0.5 - this.width * 0.5;
+    this.game.player.energy -= this.damage;
 
     context.save();
     context.fillStyle = 'gold';
@@ -24,7 +25,7 @@ class Laser {
         });
       });
       this.game.bosses.forEach((boss) => {
-        if (this.game.checkCollision(boss, this)) {
+        if (this.game.checkCollision(boss, this) && boss.y >= 0) {
           boss.hit(this.damage);
         }
       });
@@ -38,7 +39,22 @@ export class SmallLaser extends Laser {
     this.damage = 0.3;
   }
   render(context) {
-    super.render(context);
+    if (this.game.player.energy > 1 && !this.game.player.cooldown) {
+      super.render(context);
+      this.game.player.frameX = 2;
+    }
   }
 }
-export class BigLaser extends Laser {}
+export class BigLaser extends Laser {
+  constructor(game) {
+    super(game);
+    this.width = 25;
+    this.damage = 0.7;
+  }
+  render(context) {
+    if (this.game.player.energy > 1 && !this.game.player.cooldown) {
+      super.render(context);
+      this.game.player.frameX = 3;
+    }
+  }
+}

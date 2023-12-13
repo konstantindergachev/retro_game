@@ -61,13 +61,13 @@ export class Game {
       projectile.update();
       projectile.draw(context);
     });
+    this.player.draw(context);
+    this.player.update();
     this.bosses.forEach((boss) => {
       boss.draw(context);
       boss.update();
     });
     this.bosses = this.bosses.filter((boss) => !boss.markedForDeletion);
-    this.player.draw(context);
-    this.player.update();
     this.waves.forEach((wave) => {
       wave.render(context);
       if (wave.enemies.length < 1 && !wave.nextWaveTrigger && !this.gameOver) {
@@ -121,6 +121,19 @@ export class Game {
         liveShape.height
       );
     }
+
+    context.save();
+    this.player.cooldown ? (context.fillStyle = 'red') : (context.fillStyle = 'gold');
+    const energyShape = { marginLeft: 20, marginTop: 103, gap: 2, width: 2, height: 9 };
+    for (let i = 0; i < this.player.energy; i++) {
+      context.fillRect(
+        energyShape.marginLeft + energyShape.gap * i,
+        energyShape.marginTop,
+        energyShape.width,
+        energyShape.height
+      );
+    }
+    context.restore();
 
     if (this.gameOver) {
       context.textAlign = 'center';
